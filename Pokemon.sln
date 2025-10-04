@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36408.4 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokemon", "Pokemon\Pokemon.csproj", "{693E6CC7-20EF-486C-9616-630E0E110A17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokemon.Api", "Pokemon\Pokemon.Api.csproj", "{693E6CC7-20EF-486C-9616-630E0E110A17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokemon.Integrations.PokeApi", "Pokemon.Integrations.PokeApi\Pokemon.Integrations.PokeApi.csproj", "{365A9359-F623-46C7-B449-1E17CC119173}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokemon.Application", "Pokemon.Application\Pokemon.Application.csproj", "{8B17E790-4C1D-467F-AAC1-8247A23218F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{693E6CC7-20EF-486C-9616-630E0E110A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693E6CC7-20EF-486C-9616-630E0E110A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{693E6CC7-20EF-486C-9616-630E0E110A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{365A9359-F623-46C7-B449-1E17CC119173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{365A9359-F623-46C7-B449-1E17CC119173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{365A9359-F623-46C7-B449-1E17CC119173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{365A9359-F623-46C7-B449-1E17CC119173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B17E790-4C1D-467F-AAC1-8247A23218F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B17E790-4C1D-467F-AAC1-8247A23218F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B17E790-4C1D-467F-AAC1-8247A23218F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B17E790-4C1D-467F-AAC1-8247A23218F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
