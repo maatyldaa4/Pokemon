@@ -3,8 +3,7 @@
     public record Move(
         int Id,
         string Name,
-        int Accuracy,
-        int EffectChance,
-        int PowerPoints,
-        int Power);
+        int? Accuracy,
+        int? PowerPoints,
+        int? Power);
 }

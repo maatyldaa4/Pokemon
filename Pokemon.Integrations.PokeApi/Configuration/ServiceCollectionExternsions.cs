@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Pokemon.Application;
+using Pokemon.Application.Provider;
 using Pokemon.Integrations.PokeApi.Client;
 
 namespace Pokemon.Integrations.PokeApi.Configuration

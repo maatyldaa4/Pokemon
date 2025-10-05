@@ -10,7 +10,7 @@ namespace Pokemon.Application.Models
         int Weight,
         IList<MovesRef> Moves,
         IList<TypesRef> Types,
-        PokemonSprites PokemonSprites);
+        PokemonSprites Sprites);
 
     public record MovesRef(
        NamedApiResource Move);

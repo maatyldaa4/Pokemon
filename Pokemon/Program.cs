@@ -1,12 +1,14 @@
 using Pokemon.Integrations.PokeApi.Configuration;
+using Pokemon.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddPokeApiClient(builder.Configuration);
 
+builder.Services.AddPokeApiClient(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
