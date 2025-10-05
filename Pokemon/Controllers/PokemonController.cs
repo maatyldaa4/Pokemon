@@ -22,5 +22,13 @@ namespace Pokemon.Api.Controllers
             return Ok(pokemon);
         }
 
+        [HttpGet("pokemon")]
+        public async Task<IActionResult> GetPokemonsAsync()
+        {
+            var pokemon = await _pokemonProvider.GetPokemonsAsync();
+
+            return Ok(pokemon);
+        }
+
     }
 }

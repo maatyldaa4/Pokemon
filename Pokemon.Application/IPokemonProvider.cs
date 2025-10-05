@@ -5,7 +5,7 @@ namespace Pokemon.Application
     public interface IPokemonProvider
     {
         Task<PokemonInfo> GetPokemonAsync(string name);
-        Task<IList<PokemonInfo>> GetPokemonsAsync();
+        Task<IList<string>> GetPokemonsAsync();
 
     }
 }

@@ -4,6 +4,7 @@ using Pokemon.Application.Models;
 using Pokemon.Integrations.PokeApi.Configuration;
 using Pokemon.Integrations.PokeApi.DTOs;
 using Pokemon.Integrations.PokeApi.Mapping;
+using System.Xml.Linq;
 
 namespace Pokemon.Integrations.PokeApi.Client
 {
@@ -23,9 +24,16 @@ namespace Pokemon.Integrations.PokeApi.Client
         }
 
 
-        Task<IList<PokemonInfo>> IPokemonProvider.GetPokemonsAsync()
+        async Task<IList<string>> IPokemonProvider.GetPokemonsAsync()
         {
-            throw new NotImplementedException();
+            var httpResponse = _httpClient.GetAsync(_httpClient.BaseAddress + $"pokemon");
+
+            var responseContent = httpResponse.Result.Content.ReadAsStringAsync();
+            var pokemonsInfo = System.Text.Json.JsonSerializer.Deserialize<PokemonsCollectionDto>(responseContent.Result);
+
+            var pokemonsModel = pokemonsInfo.PokemonsRef.Select(p => p.Name).ToList();
+
+            return await Task.FromResult(pokemonsModel);
         }
     }
 }
