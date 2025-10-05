@@ -8,7 +8,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddPokeApiClient(builder.Configuration);
 
 
-
 var app = builder.Build();
 
 

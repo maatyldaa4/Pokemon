@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Pokemon.Application.Models;
 
 namespace Pokemon.Application
 {
     public interface IPokemonProvider
     {
+        Task<PokemonInfo> GetPokemonAsync(string name);
+        Task<IList<PokemonInfo>> GetPokemonsAsync();
 
     }
 }

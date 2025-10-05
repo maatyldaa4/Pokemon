@@ -1,9 +1,11 @@
 ﻿using Pokemon.Integrations.PokeApi.DTOs;
-using PokemonModel = Pokemon.Application.Models.Pokemon;
-using MoveModel = Pokemon.Application.Models.Move;
-using TypeModel = Pokemon.Application.Models.Type;
+using PokemonModel = Pokemon.Application.Models.PokemonInfo;
+using MoveRefModel = Pokemon.Application.Models.MoveRef;
+using MovesRefModel = Pokemon.Application.Models.MovesRef;
+using TypeRefModel = Pokemon.Application.Models.TypeRef;
+using TypesRefModel = Pokemon.Application.Models.TypesRef;
 using PokemonSpritesModel = Pokemon.Application.Models.PokemonSprites;
-using TypeRelationshipModel = Pokemon.Application.Models.TypeRelationship;
+using TypeRelationshipRefModel = Pokemon.Application.Models.TypeRelationsRef;
 
 namespace Pokemon.Integrations.PokeApi.Mapping
 {
@@ -17,28 +19,35 @@ namespace Pokemon.Integrations.PokeApi.Mapping
                 response.BaseExperience,
                 response.Height,
                 response.Weight,
-                response.Moves.Select(m => m.ToMoveModel()).ToList(),
-                response.Types.Select(t => t.ToTypeModel()).ToList(),
+                response.Moves.Select(m => m.ToMovesRefModel()).ToList(),
+                response.Types.Select(t => t.ToTypesRefModel()).ToList(),
                 response.PokemonSprites.ToPokemonSpritesModel());
         }
 
-        public static MoveModel ToMoveModel(this MoveDto moveDto)
+        public static MovesRefModel ToMovesRefModel(this MovesRefDto moveDto)
         {
-            return new MoveModel(
-                moveDto.Id,
-                moveDto.Name,
-                moveDto.Accuracy,
-                moveDto.EffectChance,
-                moveDto.PowerPoints,
-                moveDto.Power);
+            return new MovesRefModel(
+                moveDto.Move.ToMoveRefModel());
         }
 
-        public static TypeModel ToTypeModel(this TypeDto typeDto)
+        public static MoveRefModel ToMoveRefModel(this MoveRefDto moveDto)
         {
-            return new TypeModel(
-                typeDto.Id,
+            return new MoveRefModel(
+                moveDto.Name,
+                moveDto.Url);
+        }
+
+        public static TypesRefModel ToTypesRefModel(this TypesRefDto typesRefDto)
+        {
+            return new TypesRefModel(
+                typesRefDto.Type.ToTypeRefModel());
+        }
+
+        public static TypeRefModel ToTypeRefModel(this TypeRefDto typeDto)
+        {
+            return new TypeRefModel(
                 typeDto.Name,
-                typeDto.TypeRelations.ToTypeRelationshipModel());
+                typeDto.Url);
         }
 
         public static PokemonSpritesModel ToPokemonSpritesModel(this PokemonSpritesDto spritesDto)
@@ -47,13 +56,13 @@ namespace Pokemon.Integrations.PokeApi.Mapping
                 spritesDto.FrontDefault,
                 spritesDto.BackDefault);
         }
-        public static TypeRelationshipModel ToTypeRelationshipModel(this TypeRelationshipDto relationshipDto)
+        public static TypeRelationshipRefModel ToTypeRelationshipRefModel(this TypeRelationshipDto relationshipDto)
         {
-            return new TypeRelationshipModel(
-                relationshipDto.HalfDamageFrom.ToTypeModel(),
-                relationshipDto.HalfDamageTo.ToTypeModel(),
-                relationshipDto.NoDamageFrom.ToTypeModel(),
-                relationshipDto.NoDamageTo.ToTypeModel());
+            return new TypeRelationshipRefModel(
+                relationshipDto.HalfDamageFrom.ToTypeRefModel(),
+                relationshipDto.HalfDamageTo.ToTypeRefModel(),
+                relationshipDto.NoDamageFrom.ToTypeRefModel(),
+                relationshipDto.NoDamageTo.ToTypeRefModel());
         }
     }
 }
