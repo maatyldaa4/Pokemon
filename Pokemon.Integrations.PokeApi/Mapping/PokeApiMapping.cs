@@ -1,11 +1,10 @@
 ﻿using Pokemon.Integrations.PokeApi.DTOs;
 using PokemonModel = Pokemon.Application.Models.PokemonInfo;
-using MoveRefModel = Pokemon.Application.Models.MoveRef;
 using MovesRefModel = Pokemon.Application.Models.MovesRef;
-using TypeRefModel = Pokemon.Application.Models.TypeRef;
 using TypesRefModel = Pokemon.Application.Models.TypesRef;
 using PokemonSpritesModel = Pokemon.Application.Models.PokemonSprites;
 using TypeRelationshipRefModel = Pokemon.Application.Models.TypeRelationsRef;
+using Pokemon.Application.Models;
 
 namespace Pokemon.Integrations.PokeApi.Mapping
 {
@@ -24,30 +23,23 @@ namespace Pokemon.Integrations.PokeApi.Mapping
                 response.PokemonSprites.ToPokemonSpritesModel());
         }
 
-        public static MovesRefModel ToMovesRefModel(this MovesRefDto moveDto)
+        public static NamedApiResource ToNamedApiResource(this NamedApiResourceDto namedApiResource)
         {
-            return new MovesRefModel(
-                moveDto.Move.ToMoveRefModel());
+            return new NamedApiResource(
+                namedApiResource.Name,
+                namedApiResource.Url);
         }
 
-        public static MoveRefModel ToMoveRefModel(this MoveRefDto moveDto)
+        public static MovesRefModel ToMovesRefModel(this MovesRefDto movesRefDto)
         {
-            return new MoveRefModel(
-                moveDto.Name,
-                moveDto.Url);
+            return new MovesRefModel(
+                movesRefDto.Move.ToNamedApiResource());
         }
 
         public static TypesRefModel ToTypesRefModel(this TypesRefDto typesRefDto)
         {
             return new TypesRefModel(
-                typesRefDto.Type.ToTypeRefModel());
-        }
-
-        public static TypeRefModel ToTypeRefModel(this TypeRefDto typeDto)
-        {
-            return new TypeRefModel(
-                typeDto.Name,
-                typeDto.Url);
+                typesRefDto.Type.ToNamedApiResource());
         }
 
         public static PokemonSpritesModel ToPokemonSpritesModel(this PokemonSpritesDto spritesDto)
@@ -59,10 +51,10 @@ namespace Pokemon.Integrations.PokeApi.Mapping
         public static TypeRelationshipRefModel ToTypeRelationshipRefModel(this TypeRelationshipDto relationshipDto)
         {
             return new TypeRelationshipRefModel(
-                relationshipDto.HalfDamageFrom.ToTypeRefModel(),
-                relationshipDto.HalfDamageTo.ToTypeRefModel(),
-                relationshipDto.NoDamageFrom.ToTypeRefModel(),
-                relationshipDto.NoDamageTo.ToTypeRefModel());
+                relationshipDto.HalfDamageFrom.ToNamedApiResource(),
+                relationshipDto.HalfDamageTo.ToNamedApiResource(),
+                relationshipDto.NoDamageFrom.ToNamedApiResource(),
+                relationshipDto.NoDamageTo.ToNamedApiResource());
         }
     }
 }

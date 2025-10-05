@@ -1,5 +1,4 @@
-﻿using Pokemon.Application.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Pokemon.Integrations.PokeApi.DTOs
 {
@@ -14,15 +13,8 @@ namespace Pokemon.Integrations.PokeApi.DTOs
         [property: JsonPropertyName("sprites")] PokemonSpritesDto PokemonSprites);
 
     public record MovesRefDto(
-        [property: JsonPropertyName("move")] MoveRefDto Move);
+        [property: JsonPropertyName("move")] NamedApiResourceDto Move);
 
     public record TypesRefDto(
-      [property: JsonPropertyName("type")] TypeRefDto Type);
-        
-    public record MoveRefDto(
-        [property: JsonPropertyName("name")] string Name,
-        [property: JsonPropertyName("url")] string Url);
-    public record TypeRefDto(
-        [property: JsonPropertyName("name")] string Name,
-        [property: JsonPropertyName("url")] string Url);
+      [property: JsonPropertyName("type")] NamedApiResourceDto Type);
 }

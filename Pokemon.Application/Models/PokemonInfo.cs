@@ -12,14 +12,10 @@ namespace Pokemon.Application.Models
         IList<TypesRef> Types,
         PokemonSprites PokemonSprites);
 
-    public record MoveRef(string Name, string Url);
-    public record TypeRef(string Name, string Url);
-
     public record MovesRef(
-       MoveRef Move);
+       NamedApiResource Move);
 
     public record TypesRef(
-      TypeRef Type);
-
+      NamedApiResource Type);
 
 }

@@ -8,8 +8,8 @@ namespace Pokemon.Application.Models
      IList<TypeRelationsRef> TypeRelations);
 
     public record TypeRelationsRef(
-         [property: JsonPropertyName("no_damage_to")] TypeRef NoDamageTo,
-         [property: JsonPropertyName("half_damage_to")] TypeRef HalfDamageTo,
-         [property: JsonPropertyName("no_damage_from")] TypeRef NoDamageFrom,
-         [property: JsonPropertyName("half_damage_from")] TypeRef HalfDamageFrom);
+         [property: JsonPropertyName("no_damage_to")] NamedApiResource NoDamageTo,
+         [property: JsonPropertyName("half_damage_to")] NamedApiResource HalfDamageTo,
+         [property: JsonPropertyName("no_damage_from")] NamedApiResource NoDamageFrom,
+         [property: JsonPropertyName("half_damage_from")] NamedApiResource HalfDamageFrom);
 }
