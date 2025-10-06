@@ -1,39 +1,20 @@
-using Pokemon.Integrations.PokeApi.Configuration;
+using Pokemon.Api.Configuration;
 using Pokemon.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddPokeApiClient(builder.Configuration);
-builder.Services.AddApplicationServices();
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+builder.Services
+    .AddSwaggerDocumentation()
+    .AddCorsConfiguration()
+    .AddIntegrations(builder.Configuration)
+    .AddApplicationServices();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection()
+    .UseSwaggerDocumentation(app.Environment)
+    .UseCorsConfiguration(app.Environment);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-
-app.UseCors();
-
-app.MapControllers();
+app.AddEndpoints();
 
 app.Run();

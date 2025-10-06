@@ -51,11 +51,6 @@ namespace Pokemon.Application.Services
              return icons;
         }
 
-        public async Task<BattleResult> BattleSimulationAsync(string firstPokemonName, string secondPokemonName)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Move> GetMoveAsync(string name)
         {
             return _pokemonProvider.GetMoveAsync(name);

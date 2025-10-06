@@ -6,9 +6,9 @@ using Pokemon.Integrations.PokeApi.Client;
 
 namespace Pokemon.Integrations.PokeApi.Configuration
 {
-    public static class ServiceCollectionExtensions
+    public static class IntegrationConfiguration
     {
-        public static IServiceCollection AddPokeApiClient(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddIntegrationPokeApi(this IServiceCollection services, IConfiguration config)
         {
             services.Configure<PokeApiOptions>(
                 config.GetSection("ExternalApis:PokeApiOptions"));

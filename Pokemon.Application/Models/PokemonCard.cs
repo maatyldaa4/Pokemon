@@ -9,5 +9,4 @@
           IList<Move> Moves,
           IList<Type> Types,
           PokemonSprites PokemonSprites);
-    
 }
