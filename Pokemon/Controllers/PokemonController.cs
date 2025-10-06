@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Pokemon.Application.Models;
 using Pokemon.Application.Services.Interfaces;
 
 namespace Pokemon.Api.Controllers
@@ -12,7 +13,7 @@ namespace Pokemon.Api.Controllers
         [HttpGet("pokemon/{name}")]
         public async Task<IActionResult> GetPokemonAsync(string name)
         {
-            var pokemon = await _pokemonService.GetPokemonAsync(name);
+            PokemonInfo pokemon = await _pokemonService.GetPokemonAsync(name);
 
             return Ok(pokemon);
         }
@@ -20,7 +21,7 @@ namespace Pokemon.Api.Controllers
         [HttpGet("pokemon")]
         public async Task<IActionResult> GetPokemonsAsync()
         {
-            var pokemon = await _pokemonService.GetPokemonsAsync();
+            IList<PokemonIcon> pokemon = await _pokemonService.GetPokemonsAsync();
 
             return Ok(pokemon);
         }
