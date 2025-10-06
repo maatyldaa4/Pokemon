@@ -14,10 +14,7 @@ namespace Pokemon.Integrations.PokeApi.Client
 
         async Task<PokemonInfo> IPokemonProvider.GetPokemonAsync(string name)
         {
-            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + $"pokemon/{name}");
-
-            var responseContent = httpResponse.Content.ReadAsStringAsync();
-            var pokemonInfo = System.Text.Json.JsonSerializer.Deserialize<PokemonDto>(responseContent.Result);
+            var pokemonInfo = await GetAsync<PokemonDto>($"pokemon/{name}");
             var pokemonModel = pokemonInfo.ToPokemonModel();
 
             return await Task.FromResult(pokemonModel);
@@ -26,11 +23,7 @@ namespace Pokemon.Integrations.PokeApi.Client
 
         async Task<IList<string>> IPokemonProvider.GetPokemonsAsync()
         {
-            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + $"pokemon");
-
-            var responseContent = httpResponse.Content.ReadAsStringAsync();
-            var pokemonsInfo = System.Text.Json.JsonSerializer.Deserialize<PokemonsCollectionDto>(responseContent.Result);
-
+            var pokemonsInfo = await GetAsync<PokemonsCollectionDto>($"pokemon");
             var pokemonsModel = pokemonsInfo.PokemonsRef.Select(p => p.Name).ToList();
 
             return await Task.FromResult(pokemonsModel);
@@ -38,23 +31,25 @@ namespace Pokemon.Integrations.PokeApi.Client
 
         async Task<Move> IPokemonProvider.GetMoveAsync(string name)
         {
-            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + $"move/{name}");
-
-            var responseContent = httpResponse.Content.ReadAsStringAsync();
-            var move = System.Text.Json.JsonSerializer.Deserialize<MoveDto>(responseContent.Result);
+            var move = await GetAsync<MoveDto>($"move/{name}");
 
             return await Task.FromResult(move.ToMoveModel());
         }
 
         async Task<TypeModel> IPokemonProvider.GetTypeAsync(string name)
         {
-            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + $"type/{name}");
+            TypeDto typeModel = await GetAsync<TypeDto>($"type/{name}");
 
-            var responseContent = httpResponse.Content.ReadAsStringAsync();
-            var type = System.Text.Json.JsonSerializer.Deserialize<TypeDto>(responseContent.Result);
-
-            return await Task.FromResult(type.ToTypeModel());
+            return await Task.FromResult(typeModel.ToTypeModel());
         }
 
+        async Task<T> GetAsync<T> (string endpoint)
+        {
+            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + endpoint);
+            var responseContent = httpResponse.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<T>(responseContent.Result);
+
+            return result;
+        }
     }
 }
