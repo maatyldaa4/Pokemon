@@ -1,29 +1,25 @@
-﻿using Microsoft.Extensions.Options;
-using Pokemon.Application.Models;
+﻿using Pokemon.Application.Models;
 using Pokemon.Application.Provider;
-using Pokemon.Integrations.PokeApi.Configuration;
+using Pokemon.ClientWrapper.Client;
 using Pokemon.Integrations.PokeApi.DTOs;
 using Pokemon.Integrations.PokeApi.Mapping;
 using TypeModel = Pokemon.Application.Models.Type;
 
 namespace Pokemon.Integrations.PokeApi.Client
 {
-    public class PokeApiClient(HttpClient httpClient, IOptions<PokeApiOptions> options) : IPokemonProvider
+    public class PokeApiClient(IExternalApiClient _api) : IPokemonProvider
     {
-        private readonly HttpClient _httpClient = httpClient;
-
         async Task<PokemonInfo> IPokemonProvider.GetPokemonAsync(string name)
         {
-            var pokemonInfo = await GetAsync<PokemonDto>($"pokemon/{name}");
+            var pokemonInfo = await _api.GetDataAsync<PokemonDto>($"pokemon/{name}");
             var pokemonModel = pokemonInfo.ToPokemonModel();
 
             return await Task.FromResult(pokemonModel);
         }
 
-
         async Task<IList<string>> IPokemonProvider.GetPokemonsAsync()
         {
-            var pokemonsInfo = await GetAsync<PokemonsCollectionDto>($"pokemon");
+            var pokemonsInfo = await _api.GetDataAsync<PokemonsCollectionDto>($"pokemon");
             var pokemonsModel = pokemonsInfo.PokemonsRef.Select(p => p.Name).ToList();
 
             return await Task.FromResult(pokemonsModel);
@@ -31,25 +27,16 @@ namespace Pokemon.Integrations.PokeApi.Client
 
         async Task<Move> IPokemonProvider.GetMoveAsync(string name)
         {
-            var move = await GetAsync<MoveDto>($"move/{name}");
+            var move = await _api.GetDataAsync<MoveDto>($"move/{name}");
 
             return await Task.FromResult(move.ToMoveModel());
         }
 
         async Task<TypeModel> IPokemonProvider.GetTypeAsync(string name)
         {
-            TypeDto typeModel = await GetAsync<TypeDto>($"type/{name}");
+            TypeDto typeModel = await _api.GetDataAsync<TypeDto>($"type/{name}");
 
             return await Task.FromResult(typeModel.ToTypeModel());
-        }
-
-        async Task<T> GetAsync<T> (string endpoint)
-        {
-            var httpResponse = await _httpClient.GetAsync(_httpClient.BaseAddress + endpoint);
-            var responseContent = httpResponse.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<T>(responseContent.Result);
-
-            return result;
         }
     }
 }

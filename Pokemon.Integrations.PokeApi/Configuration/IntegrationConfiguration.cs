@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Pokemon.Application.Provider;
+using Pokemon.ClientWrapper.Configuration;
 using Pokemon.Integrations.PokeApi.Client;
 
 namespace Pokemon.Integrations.PokeApi.Configuration
@@ -13,12 +13,8 @@ namespace Pokemon.Integrations.PokeApi.Configuration
             services.Configure<PokeApiOptions>(
                 config.GetSection("ExternalApis:PokeApiOptions"));
 
-            services.AddHttpClient<IPokemonProvider, PokeApiClient>((sp, http) =>
-            {
-                var options = sp.GetRequiredService<IOptions<PokeApiOptions>>().Value;
-                http.BaseAddress = new Uri(options.BaseUrl);
-                http.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
-            });
+            services.AddClientWrapper<PokeApiOptions>(config);
+            services.AddScoped<IPokemonProvider, PokeApiClient>();
 
             return services;
         }
