@@ -9,9 +9,9 @@ using Pokemon.Application.Models;
 
 namespace Pokemon.Integrations.PokeApi.Mapping
 {
-    internal static class PokeApiMapping
+    public class PokeApiMapping : IPokeApiMapping
     {
-        public static PokemonModel ToPokemonModel(this PokemonDto response)
+        public PokemonModel ToPokemonModel(PokemonDto response)
         {
             return new PokemonModel(
                 response.Id,
@@ -19,58 +19,58 @@ namespace Pokemon.Integrations.PokeApi.Mapping
                 response.BaseExperience,
                 response.Height,
                 response.Weight,
-                response.Moves.Select(m => m.ToMovesRefModel()).ToList(),
-                response.Types.Select(t => t.ToTypesRefModel()).ToList(),
-                response.PokemonSprites.ToPokemonSpritesModel());
+                response.Moves.Select(ToMovesRefModel).ToList(),
+                response.Types.Select(ToTypesRefModel).ToList(),
+                ToPokemonSpritesModel(response.PokemonSprites));
         }
 
-        public static NamedApiResource ToNamedApiResource(this NamedApiResourceDto namedApiResource)
+        public NamedApiResource ToNamedApiResource(NamedApiResourceDto namedApiResource)
         {
             return new NamedApiResource(
                 namedApiResource.Name,
                 namedApiResource.Url);
         }
 
-        public static MovesRefModel ToMovesRefModel(this MovesRefDto movesRefDto)
+        public MovesRefModel ToMovesRefModel(MovesRefDto movesRefDto)
         {
             return new MovesRefModel(
-                movesRefDto.Move.ToNamedApiResource());
+                ToNamedApiResource(movesRefDto.Move));
         }
 
-        public static TypesRefModel ToTypesRefModel(this TypesRefDto typesRefDto)
+        public TypesRefModel ToTypesRefModel(TypesRefDto typesRefDto)
         {
             return new TypesRefModel(
-                typesRefDto.Type.ToNamedApiResource());
+                ToNamedApiResource(typesRefDto.Type));
         }
 
-        public static PokemonSpritesModel ToPokemonSpritesModel(this PokemonSpritesDto spritesDto)
+        public PokemonSpritesModel ToPokemonSpritesModel(PokemonSpritesDto spritesDto)
         {
             return new PokemonSpritesModel(
                 spritesDto.FrontDefault,
                 spritesDto.BackDefault);
         }
-        public static TypeRelationshipRefModel ToTypeRelationshipRefModel(this TypeRelationshipDto relationshipDto)
+        public TypeRelationshipRefModel ToTypeRelationshipRefModel(TypeRelationshipDto relationshipDto)
         {
             return new TypeRelationshipRefModel(
-                relationshipDto.HalfDamageFrom.Select(t => t.ToNamedApiResource()).ToList(),
-                relationshipDto.HalfDamageTo.Select(t => t.ToNamedApiResource()).ToList(),
-                relationshipDto.NoDamageFrom.Select(t => t.ToNamedApiResource()).ToList(),
-                relationshipDto.NoDamageTo.Select(t => t.ToNamedApiResource()).ToList());
+                relationshipDto.HalfDamageFrom.Select(ToNamedApiResource).ToList(),
+                relationshipDto.HalfDamageTo.Select(ToNamedApiResource).ToList(),
+                relationshipDto.NoDamageFrom.Select(ToNamedApiResource).ToList(),
+                relationshipDto.NoDamageTo.Select(ToNamedApiResource).ToList());
         }
 
-        public static Move ToMoveModel(this MoveDto move)
+        public Move ToMoveModel(MoveDto move)
         {
             return new Move(
-                move.Id, 
-                move.Name, 
-                move.Accuracy, 
-                move.PowerPoints, 
+                move.Id,
+                move.Name,
+                move.Accuracy,
+                move.PowerPoints,
                 move.Power);
         }
 
-        public static TypeModel ToTypeModel(this TypeDto type)
+        public TypeModel ToTypeModel(TypeDto type)
         {
-            return new TypeModel(type.Id, type.Name, type.TypeRelations.ToTypeRelationshipRefModel());
+            return new TypeModel(type.Id, type.Name, ToTypeRelationshipRefModel(type.TypeRelations));
         }
 
     }

@@ -13,7 +13,7 @@ namespace Pokemon.Integrations.PokeApi.Configuration
             services.Configure<PokeApiOptions>(
                 config.GetSection("ExternalApis:PokeApiOptions"));
 
-            services.AddClientWrapper<PokeApiOptions>(config);
+            services.AddClientWrapper<PokeApiOptions>();
             services.AddScoped<IPokemonProvider, PokeApiClient>();
 
             return services;

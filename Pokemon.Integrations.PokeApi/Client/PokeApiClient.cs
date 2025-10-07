@@ -7,12 +7,12 @@ using TypeModel = Pokemon.Application.Models.Type;
 
 namespace Pokemon.Integrations.PokeApi.Client
 {
-    public class PokeApiClient(IExternalApiClient _api) : IPokemonProvider
+    public class PokeApiClient(IExternalApiClient _api, IPokeApiMapping _pokeApiMapping) : IPokemonProvider
     {
         async Task<PokemonInfo> IPokemonProvider.GetPokemonAsync(string name)
         {
             var pokemonInfo = await _api.GetDataAsync<PokemonDto>($"pokemon/{name}");
-            var pokemonModel = pokemonInfo.ToPokemonModel();
+            var pokemonModel = _pokeApiMapping.ToPokemonModel(pokemonInfo);
 
             return await Task.FromResult(pokemonModel);
         }
@@ -29,14 +29,14 @@ namespace Pokemon.Integrations.PokeApi.Client
         {
             var move = await _api.GetDataAsync<MoveDto>($"move/{name}");
 
-            return await Task.FromResult(move.ToMoveModel());
+            return await Task.FromResult(_pokeApiMapping.ToMoveModel(move));
         }
 
         async Task<TypeModel> IPokemonProvider.GetTypeAsync(string name)
         {
             TypeDto typeModel = await _api.GetDataAsync<TypeDto>($"type/{name}");
 
-            return await Task.FromResult(typeModel.ToTypeModel());
+            return await Task.FromResult(_pokeApiMapping.ToTypeModel(typeModel));
         }
     }
 }

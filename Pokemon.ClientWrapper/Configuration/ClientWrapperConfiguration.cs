@@ -7,7 +7,8 @@ namespace Pokemon.ClientWrapper.Configuration
 {
     public static class ClientWrapperConfiguration
     {
-        public static IServiceCollection AddClientWrapper<T>(this IServiceCollection services, IConfiguration config) where T: class, IApiOptions
+        public static IServiceCollection AddClientWrapper<T>(this IServiceCollection services) 
+            where T: class, IApiOptions
         {
             services.AddHttpClient<IExternalApiClient, ExternalApiClient>((sp, http) =>
             {
