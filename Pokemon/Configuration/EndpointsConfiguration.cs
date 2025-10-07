@@ -7,7 +7,7 @@ namespace Pokemon.Api.Configuration
         public static void AddEndpoints(this WebApplication app)
         {
             app.AddPokemonEndpoints();
-            app.AddPokemonDetailsEndpoints();         
+            app.AddPokemonCardsEndpoints();
         }
     }
 }

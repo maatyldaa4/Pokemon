@@ -8,11 +8,11 @@ namespace Pokemon.ClientWrapper.Client
         private readonly HttpClient _httpClient = httpClient;
         private readonly ILogger _logger = logger;
 
-        public async Task<T> GetDataAsync<T>(string endpoint)
+        public async Task<T> GetDataAsync<T>(string endpoint, CancellationToken ct)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}{endpoint}");
+                var response = await _httpClient.GetAsync($"{_httpClient.BaseAddress}{endpoint}", ct);
 
                 if (!response.IsSuccessStatusCode)
                 {

@@ -1,7 +1,8 @@
 ﻿using Pokemon.Application.Models;
 using Pokemon.Application.Provider;
 using Pokemon.Application.Services.Interfaces;
-using PokemonType = Pokemon.Application.Models.Type;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace Pokemon.Application.Services
 {
@@ -9,23 +10,9 @@ namespace Pokemon.Application.Services
     {
         private readonly IPokemonProvider _pokemonProvider = pokemonProvider;
 
-        public async Task<PokemonCard> GetPokemonCardAsync(string name)
+        public async Task<PokemonCard> GetPokemonCardAsync(string name, CancellationToken ct)
         {
-            PokemonInfo pokemonInfo = await _pokemonProvider.GetPokemonAsync(name);
-            IList<Move> moves = new List<Move>();
-            foreach (var moveRef in pokemonInfo.Moves)
-            {
-                Move move = await _pokemonProvider.GetMoveAsync(moveRef.Move.Name);
-
-                moves.Add(move);
-            }
-
-            IList<PokemonType> types = new List<PokemonType>();
-            foreach (var typeRef in pokemonInfo.Types)
-            {
-                PokemonType type = await _pokemonProvider.GetTypeAsync(typeRef.Type.Name);
-                types.Add(type);
-            }
+            PokemonCard pokemonInfo = await _pokemonProvider.GetPokemonAsync(name, ct);
 
             return new PokemonCard(
                 pokemonInfo.Id,
@@ -33,37 +20,96 @@ namespace Pokemon.Application.Services
                 pokemonInfo.BaseExperience,
                 pokemonInfo.Height,
                 pokemonInfo.Weight,
-                moves,
-                types,
-                pokemonInfo.Sprites);
+                pokemonInfo.PokemonSprites);
         }
 
-        public async Task<IList<PokemonIcon>> GetPokemonsAsync()
+        public async Task<IList<PokemonIcon>> GetPokemonIconsAsync(
+            string? search,
+            string order,
+            CancellationToken ct)
         {
-            IList<string> names = await _pokemonProvider.GetPokemonsAsync();
-
+            IList<string> names = await _pokemonProvider.GetPokemonsAsync(ct);
             IList<PokemonIcon> icons = new List<PokemonIcon>();
             foreach (var name in names)
             {
-                var pokemonInfo = await _pokemonProvider.GetPokemonAsync(name);
-                icons.Add(new PokemonIcon(pokemonInfo.Name, pokemonInfo.Sprites.FrontDefault));
+                var pokemonCard = await _pokemonProvider.GetPokemonAsync(name, ct);
+                icons.Add(new PokemonIcon(pokemonCard.Name, pokemonCard.PokemonSprites.FrontDefault));
             }
-             return icons;
+
+            if (!string.IsNullOrWhiteSpace(search))
+            { 
+                icons = icons.Where(p => 
+                    p.Name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList(); 
+            }
+
+            icons = order.ToLower() switch
+            {
+                "desc" => icons.OrderByDescending(p => p.Name).ToList(),
+                _ => icons.OrderBy(p => p.Name).ToList(),
+            };
+
+            return icons;
         }
 
-        public Task<Move> GetMoveAsync(string name)
+        public async Task<PokemonIcon> GetPokemonAsync(string name, CancellationToken ct)
         {
-            return _pokemonProvider.GetMoveAsync(name);
+            var pokemonCard = await _pokemonProvider.GetPokemonAsync(name, ct);
+
+            return new PokemonIcon(pokemonCard.Name, pokemonCard.PokemonSprites.FrontDefault);
         }
 
-        public Task<PokemonType> GetTypeAsync(string name)
+        public async Task<IList<PokemonCard>> GetPokemonCardsAsync(string? search, int? minBaseExperience,
+            string sort, string order, CancellationToken ct)
         {
-           return _pokemonProvider.GetTypeAsync(name);
+            IList<string> names = await _pokemonProvider.FetchAllPokemonsAsync(ct);
+            var pokemonCards = new ConcurrentBag<PokemonCard>();
+
+            await Parallel.ForEachAsync(names, new ParallelOptions
+            {
+                MaxDegreeOfParallelism = 10,   
+                CancellationToken = ct
+            },
+            async (name, token) =>
+            {
+
+                var pokemonCard = await GetPokemonCardAsync(name, token);
+                pokemonCards.Add(pokemonCard);
+                
+            });
+
+            var pokemonCardsList = pokemonCards.ToList();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            { 
+                pokemonCardsList = pokemonCardsList
+                    .Where(p => p.Name
+                    .Contains(search, StringComparison.OrdinalIgnoreCase))
+                    .ToList(); 
+            }
+
+            if(minBaseExperience.HasValue)
+            {
+                pokemonCardsList = pokemonCardsList
+                    .Where(p => p.BaseExperience >= minBaseExperience.Value)
+                    .ToList();
+            }
+
+            return sort switch
+            {
+                "weight" => (
+                    order == "desc" ?
+                        pokemonCardsList.OrderByDescending(p => p.Weight) :
+                        pokemonCardsList.OrderBy(p => p.Weight)).ToList(),
+                "height" => (
+                order == "desc" ?
+                    pokemonCardsList.OrderByDescending(p => p.Height) :
+                    pokemonCardsList.OrderBy(p => p.Height)).ToList(),
+                _ => pokemonCardsList.OrderBy(p => p.Name).ToList()
+            };
         }
 
-        public Task<PokemonInfo> GetPokemonAsync(string name)
-        {
-            return _pokemonProvider.GetPokemonAsync(name);
+        public async Task<IList<string>> FetchAllPokemonsAsync(CancellationToken ct) { 
+            return await _pokemonProvider.FetchAllPokemonsAsync(ct);
         }
     }
 }

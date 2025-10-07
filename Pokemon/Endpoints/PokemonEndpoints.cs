@@ -1,4 +1,5 @@
-﻿using Pokemon.Application.Services.Interfaces;
+﻿using Pokemon.Api.Requests;
+using Pokemon.Application.Services.Interfaces;
 
 namespace Pokemon.Api.Endpoints
 {
@@ -7,28 +8,26 @@ namespace Pokemon.Api.Endpoints
         public static void AddPokemonEndpoints(this WebApplication app)
         {
             app.MapGet("/api/pokemon/{name}", GetPokemonAsync);
-            app.MapGet("/api/pokemons", GetPokemonsAsync);
-            app.MapGet("/api/pokemon-card/{name}", GetPokemonCardAsync);
+            app.MapGet("/api/pokemon", GetPokemonsAsync);
         }
 
-        public static async Task<IResult> GetPokemonAsync(string name, IPokemonService pokemonService)
+        public static async Task<IResult> GetPokemonAsync(string name, 
+            IPokemonService pokemonService,
+            CancellationToken ct)
         {
-            var pokemon = await pokemonService.GetPokemonAsync(name);
+            var pokemon = await pokemonService.GetPokemonAsync(name, ct);
 
             return Results.Ok(pokemon);
         }
 
-        public static async Task<IResult> GetPokemonsAsync(IPokemonService pokemonService)
+        public static async Task<IResult> GetPokemonsAsync(
+            IPokemonService pokemonService,
+            [AsParameters] PokemonIconsQuery query,
+            CancellationToken ct)
         {
-            var pokemons = await pokemonService.GetPokemonsAsync();
+            var pokemons = await pokemonService.GetPokemonIconsAsync(query.Search, query.Order, ct);
+
             return Results.Ok(pokemons);
         }
-
-        public static async Task<IResult> GetPokemonCardAsync(string name, IPokemonService pokemonService)
-        {
-            var pokemonCard = await pokemonService.GetPokemonCardAsync(name);
-            return Results.Ok(pokemonCard);
-        }
-
     }
 }

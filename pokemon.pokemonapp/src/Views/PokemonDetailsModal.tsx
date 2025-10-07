@@ -1,4 +1,4 @@
-import { Col, Modal, Row, Image, Badge } from "react-bootstrap";
+import { Col, Modal, Row, Image} from "react-bootstrap";
 import type { PokemonDetails } from "../Common/Types"; 
 
 interface IPokemonDetailsModalProps {
@@ -18,23 +18,14 @@ export default function PokemonDetailsModal({
                     <Row className="align-items-center g-4">
                     <Col xs={12} md="auto" className="text-center">
                         <Image
-                            src={selectedPokemon?.sprites.frontDefault}
+                            src={selectedPokemon?.pokemonSprites.frontDefault}
                             alt={selectedPokemon?.name}
                             width={128}
                             height={128}
                             style={{ objectFit: "contain" }}
                         />
                     </Col>
-
                     <Col>
-                        <div className="mb-2">
-                            {selectedPokemon?.types?.map(t => (
-                                <Badge key={t.name} bg="secondary" className="me-2 text-capitalize">
-                                {t.name}
-                                </Badge>
-                            ))}
-                        </div>
-
                         <Row xs={3} className="gx-4 gy-2 small">
                             <Col><strong>Base EXP</strong><div>{selectedPokemon?.baseExperience}</div></Col>
                             <Col><strong>Height</strong><div>{selectedPokemon?.height}</div></Col>

@@ -15,6 +15,7 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         private IPokemonProvider _objectUnderTests;
         private IExternalApiClient _api;
         private IPokeApiMapping _mapping;
+        private CancellationToken ct = CancellationToken.None;
 
         [SetUp]
         public void SetUp()
@@ -25,15 +26,15 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         }
 
         [Test]
-        public void Should_Return_PokemonModel_When_GetPokemonAsyncCalled()
+        public void Should_Return_PokemonCard_When_GetPokemonAsyncCalled()
         {
             var pokemonName = "pikachu";
             var pokemonDto = A.Fake<PokemonDto>();
-            var pokemonModel = A.Fake<PokemonInfo>();
-            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}")).Returns(pokemonDto);
-            A.CallTo(() => _mapping.ToPokemonModel(pokemonDto)).Returns(pokemonModel);
+            var pokemonModel = A.Fake<PokemonCard>();
+            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}", ct)).Returns(pokemonDto);
+            A.CallTo(() => _mapping.ToPokemonCard(pokemonDto)).Returns(pokemonModel);
             
-            var result = _objectUnderTests.GetPokemonAsync(pokemonName).Result;
+            var result = _objectUnderTests.GetPokemonAsync(pokemonName, ct).Result;
 
             AssertThatObjectsAreEqual(result, pokemonModel);
         }
@@ -43,13 +44,13 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         {
             var pokemonName = "pikachu";
             var pokemonDto = A.Fake<PokemonDto>();
-            var pokemonModel = A.Fake<PokemonInfo>();
-            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}")).Returns(pokemonDto);
-            A.CallTo(() => _mapping.ToPokemonModel(pokemonDto)).Returns(pokemonModel);
+            var pokemonModel = A.Fake<PokemonCard>();
+            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}", ct)).Returns(pokemonDto);
+            A.CallTo(() => _mapping.ToPokemonCard(pokemonDto)).Returns(pokemonModel);
 
-            var result = _objectUnderTests.GetPokemonAsync(pokemonName).Result;
+            var result = _objectUnderTests.GetPokemonAsync(pokemonName, ct).Result;
 
-            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}"))
+            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}", ct))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -58,13 +59,13 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         {
             var pokemonName = "pikachu";
             var pokemonDto = A.Fake<PokemonDto>();
-            var pokemonModel = A.Fake<PokemonInfo>();
-            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}")).Returns(pokemonDto);
-            A.CallTo(() => _mapping.ToPokemonModel(pokemonDto)).Returns(pokemonModel);
+            var pokemonModel = A.Fake<PokemonCard>();
+            A.CallTo(() => _api.GetDataAsync<PokemonDto>($"pokemon/{pokemonName}", ct)).Returns(pokemonDto);
+            A.CallTo(() => _mapping.ToPokemonCard(pokemonDto)).Returns(pokemonModel);
 
-            var result = _objectUnderTests.GetPokemonAsync(pokemonName).Result;
+            var result = _objectUnderTests.GetPokemonAsync(pokemonName, ct).Result;
 
-            A.CallTo(() => _mapping.ToPokemonModel(pokemonDto))
+            A.CallTo(() => _mapping.ToPokemonCard(pokemonDto))
                 .MustHaveHappenedOnceExactly();
         }
 
@@ -75,14 +76,13 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
             var namedApiResource = new NamedApiResourceDto(pokemonName, "url");
             var pokemonsCollection = new PokemonsCollectionDto(1, "next", "prev", 
                 new List<NamedApiResourceDto> { namedApiResource });
-            A.CallTo(() => _api.GetDataAsync<PokemonsCollectionDto>($"pokemon")).Returns(pokemonsCollection);
+            A.CallTo(() => _api.GetDataAsync<PokemonsCollectionDto>($"pokemon", ct)).Returns(pokemonsCollection);
             var expectedNames = new List<string> { pokemonName };
 
-            var result = _objectUnderTests.GetPokemonsAsync().Result;
+            var result = _objectUnderTests.GetPokemonsAsync(ct).Result;
 
             Assert.That(result, Is.EquivalentTo(expectedNames));
         }
-
 
     }
 }

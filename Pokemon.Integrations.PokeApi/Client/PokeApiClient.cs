@@ -3,40 +3,71 @@ using Pokemon.Application.Provider;
 using Pokemon.ClientWrapper.Client;
 using Pokemon.Integrations.PokeApi.DTOs;
 using Pokemon.Integrations.PokeApi.Mapping;
-using TypeModel = Pokemon.Application.Models.Type;
 
 namespace Pokemon.Integrations.PokeApi.Client
 {
-    public class PokeApiClient(IExternalApiClient _api, IPokeApiMapping _pokeApiMapping) : IPokemonProvider
+    public class PokeApiClient(
+        IExternalApiClient _api, 
+        IPokeApiMapping _pokeApiMapping) : IPokemonProvider
     {
-        async Task<PokemonInfo> IPokemonProvider.GetPokemonAsync(string name)
+        async Task<PokemonCard> IPokemonProvider.GetPokemonAsync(string name, CancellationToken ct)
         {
-            var pokemonInfo = await _api.GetDataAsync<PokemonDto>($"pokemon/{name}");
-            var pokemonModel = _pokeApiMapping.ToPokemonModel(pokemonInfo);
+            var pokemonInfo = await _api.GetDataAsync<PokemonDto>($"pokemon/{name}", ct);
+            var pokemonModel = _pokeApiMapping.ToPokemonCard(pokemonInfo);
 
             return await Task.FromResult(pokemonModel);
         }
 
-        async Task<IList<string>> IPokemonProvider.GetPokemonsAsync()
+        async Task<IList<string>> IPokemonProvider.GetPokemonsAsync(
+            CancellationToken ct,
+            int? limit,
+            int? offset)
         {
-            var pokemonsInfo = await _api.GetDataAsync<PokemonsCollectionDto>($"pokemon");
+            var pokemonsInfo = await GetPokemonsRawAsync(ct, limit, offset);
             var pokemonsModel = pokemonsInfo.PokemonsRef.Select(p => p.Name).ToList();
 
             return await Task.FromResult(pokemonsModel);
         }
 
-        async Task<Move> IPokemonProvider.GetMoveAsync(string name)
+        async Task<IList<string>> IPokemonProvider.FetchAllPokemonsAsync(CancellationToken ct)
         {
-            var move = await _api.GetDataAsync<MoveDto>($"move/{name}");
+            var firstPage = await GetPokemonsRawAsync(ct);
+            var total = firstPage.Count;
 
-            return await Task.FromResult(_pokeApiMapping.ToMoveModel(move));
+            const int batchSize = 100;
+            var allNames = new List<string>(capacity: total);
+            for (int offset = 0; offset < total; offset += batchSize)
+            {
+                var page = await ((IPokemonProvider)this).GetPokemonsAsync(ct, batchSize, offset);
+                allNames.AddRange(page);
+            }
+
+            return allNames.ToList();
         }
 
-        async Task<TypeModel> IPokemonProvider.GetTypeAsync(string name)
+        private async Task<PokemonsCollectionDto> GetPokemonsRawAsync(
+           CancellationToken ct,
+           int? limit = null,
+           int? offset = null)
         {
-            TypeDto typeModel = await _api.GetDataAsync<TypeDto>($"type/{name}");
+            var query = QueryBuilder(limit, offset);
+            var pokemonsInfo = await _api.GetDataAsync<PokemonsCollectionDto>(query, ct);
 
-            return await Task.FromResult(_pokeApiMapping.ToTypeModel(typeModel));
+            return await Task.FromResult(pokemonsInfo);
+        }
+
+        private static string QueryBuilder(int? limit = null, int? offset = null)
+        {
+            var query = "pokemon?";
+            if (limit.HasValue)
+            {
+                query += $"limit={limit.Value}&";
+            }
+            if (offset.HasValue)
+            {
+                query += $"offset={offset.Value}&";
+            }
+            return query.TrimEnd('&');
         }
     }
 }

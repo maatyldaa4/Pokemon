@@ -11,6 +11,8 @@ builder.Services
     .AddIntegrations(builder.Configuration)
     .AddApplicationServices();
 
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection()

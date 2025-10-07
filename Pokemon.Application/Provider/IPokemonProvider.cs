@@ -5,9 +5,8 @@ namespace Pokemon.Application.Provider
 {
     public interface IPokemonProvider
     {
-        Task<PokemonInfo> GetPokemonAsync(string name);
-        Task<IList<string>> GetPokemonsAsync();
-        Task<Move> GetMoveAsync(string name);
-        Task<Models.Type> GetTypeAsync(string name);
+        Task<PokemonCard> GetPokemonAsync(string name, CancellationToken ct);
+        Task<IList<string>> GetPokemonsAsync(CancellationToken ct, int? limit = null, int? offset = null);
+        Task<IList<string>> FetchAllPokemonsAsync(CancellationToken ct);
     }
 }

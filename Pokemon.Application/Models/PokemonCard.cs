@@ -6,7 +6,5 @@
           int BaseExperience,
           int Height,
           int Weight,
-          IList<Move> Moves,
-          IList<Type> Types,
           PokemonSprites PokemonSprites);
 }

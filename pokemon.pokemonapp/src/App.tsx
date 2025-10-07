@@ -5,9 +5,7 @@ function App() {
 
     return (
         <Container>
-
-                    <PokemonsView/>
-
+            <PokemonsView/>
         </Container>   
     );
 }

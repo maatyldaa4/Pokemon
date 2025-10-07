@@ -4,10 +4,10 @@ namespace Pokemon.Application.Services.Interfaces
 {
     public interface IPokemonService
     {
-        Task<PokemonCard> GetPokemonCardAsync(string name);
-        Task<PokemonInfo> GetPokemonAsync(string name);
-        Task<IList<PokemonIcon>> GetPokemonsAsync();
-        Task<Move> GetMoveAsync(string name);
-        Task<Models.Type> GetTypeAsync(string name);
+        Task<PokemonCard> GetPokemonCardAsync(string name, CancellationToken ct);
+        Task<PokemonIcon> GetPokemonAsync(string name, CancellationToken ct);
+        Task<IList<PokemonIcon>> GetPokemonIconsAsync(string? search, string order, CancellationToken ct);
+        Task<IList<PokemonCard>> GetPokemonCardsAsync(string? search, int? minBaseExperience, string sort, string order, CancellationToken ct);
+        Task<IList<string>> FetchAllPokemonsAsync(CancellationToken ct);
     }
 }

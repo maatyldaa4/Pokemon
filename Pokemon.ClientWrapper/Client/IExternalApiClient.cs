@@ -2,6 +2,6 @@
 {
     public interface IExternalApiClient
     {
-        Task<T> GetDataAsync<T>(string endpoint);
+        Task<T> GetDataAsync<T>(string endpoint, CancellationToken ct);
     }
 }

@@ -12,7 +12,7 @@ export default function PokemonsView() {
     const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
-        fetch("http://localhost/Pokemon/api/Pokemon/pokemon")
+        fetch("http://localhost/Pokemon/api/pokemon")
             .then(res => res.json())
             .then(pokemons => {
                 setPokemons(pokemons);
@@ -26,13 +26,12 @@ export default function PokemonsView() {
     }, []);
 
     const pokemonDetailsHandler = (pokemonName: string) => () => {
-        fetch(`http://localhost/Pokemon/api/Pokemon/pokemon/${pokemonName}`)
+        fetch(`http://localhost/Pokemon/api/pokemon-card/${pokemonName}`)
             .then(res => res.json())
             .then(pokemonDetails => {
                 setSelectedPokemon(pokemonDetails);
                 setLoading(false);
                 setModalShow(true);
-                console.log(pokemonDetails);
             })
             .catch(err => {
                 console.error("Failed to load pokemons", err);
