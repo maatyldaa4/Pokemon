@@ -1,25 +1,25 @@
+using Pokemon.Api.Configuration;
+using Pokemon.Application.Configuration;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services
+    .AddSwaggerDocumentation()
+    .AddCorsConfiguration()
+    .AddSerilog()
+    .AddIntegrations(builder.Configuration)
+    .AddApplicationServices();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseHttpsRedirection()
+    .UseSwaggerDocumentation(app.Environment)
+    .UseCorsConfiguration(app.Environment)
+    .EnrichSerilogProperties();
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+app.AddEndpoints();
 
 app.Run();
