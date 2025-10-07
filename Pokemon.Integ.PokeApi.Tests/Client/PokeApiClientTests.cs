@@ -1,8 +1,11 @@
 ﻿using FakeItEasy;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Pokemon.Application.Models;
 using Pokemon.Application.Provider;
 using Pokemon.ClientWrapper.Client;
 using Pokemon.Integrations.PokeApi.Client;
+using Pokemon.Integrations.PokeApi.Configuration;
 using Pokemon.Integrations.PokeApi.DTOs;
 using Pokemon.Integrations.PokeApi.Mapping;
 using static Pokemon.TestHelper.Asserts.ObjectsAssert;
@@ -15,6 +18,9 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         private IPokemonProvider _objectUnderTests;
         private IExternalApiClient _api;
         private IPokeApiMapping _mapping;
+        private IMemoryCache _memoryCache;
+        private IOptions<PokeApiOptions> _options;
+
         private CancellationToken ct = CancellationToken.None;
 
         [SetUp]
@@ -22,7 +28,12 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
         {
             _api = A.Fake<IExternalApiClient>();
             _mapping = A.Fake<IPokeApiMapping>();
-            _objectUnderTests = new PokeApiClient(_api, _mapping);
+            _memoryCache = A.Fake<IMemoryCache>();
+            _options = A.Fake<IOptions<PokeApiOptions>>();
+            object cacheValue;
+            A.CallTo(() => _memoryCache.TryGetValue(A<object>._, out cacheValue)).Returns(false);
+
+            _objectUnderTests = new PokeApiClient(_api, _mapping, _memoryCache, _options);
         }
 
         [Test]
@@ -76,7 +87,7 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
             var namedApiResource = new NamedApiResourceDto(pokemonName, "url");
             var pokemonsCollection = new PokemonsCollectionDto(1, "next", "prev", 
                 new List<NamedApiResourceDto> { namedApiResource });
-            A.CallTo(() => _api.GetDataAsync<PokemonsCollectionDto>($"pokemon", ct)).Returns(pokemonsCollection);
+            A.CallTo(() => _api.GetDataAsync<PokemonsCollectionDto>(A<string>._, ct)).Returns(pokemonsCollection);
             var expectedNames = new List<string> { pokemonName };
 
             var result = _objectUnderTests.GetPokemonsAsync(ct).Result;
@@ -84,5 +95,10 @@ namespace Pokemon.Integ.PokeApi.Tests.Client
             Assert.That(result, Is.EquivalentTo(expectedNames));
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _memoryCache?.Dispose();
+        }
     }
 }

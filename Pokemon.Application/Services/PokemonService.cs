@@ -2,7 +2,6 @@
 using Pokemon.Application.Provider;
 using Pokemon.Application.Services.Interfaces;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 
 namespace Pokemon.Application.Services
 {

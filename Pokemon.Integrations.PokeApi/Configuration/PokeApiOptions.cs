@@ -6,5 +6,6 @@ namespace Pokemon.Integrations.PokeApi.Configuration
     {
         public string BaseUrl { get; set; } = "";
         public int TimeoutSeconds { get; set; } = 60;
+        public int CacheMinutes { get; set; } = 30;
     }
 }
