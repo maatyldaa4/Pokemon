@@ -1,4 +1,4 @@
-# Pokemon
+# Pokemon - interview task
 
 ## Summary
 An application allows to browse Pokemons from PokeApi - https://pokeapi.co/docs/v2
